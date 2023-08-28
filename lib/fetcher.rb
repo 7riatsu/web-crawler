@@ -2,14 +2,19 @@ require 'net/http'
 require 'nokogiri'
 require 'uri'
 
+SAVE_DIRECTORY = '/app/saved_pages'.freeze
+
 def fetch(url)
   uri = URI.parse(url)
   response = Net::HTTP.get_response(uri)
   return nil unless response.is_a?(Net::HTTPSuccess)
 
+  # Make sure directory exists
+  Dir.mkdir(SAVE_DIRECTORY) unless Dir.exist?(SAVE_DIRECTORY)
+
   # Save to disk
   host = uri.host
-  File.write("#{host}.html", response.body)
+  File.write(File.join(SAVE_DIRECTORY, "#{host}.html"), response.body)
 
   # Fetch metadata
   html_body = Nokogiri::HTML(response.body)
