@@ -28,4 +28,14 @@ class FetcherTest < Minitest::Test
       end
     end
   end
+
+  def test_fetch_not_found
+    mock_not_found = Net::HTTPNotFound.new(1.0, '404', 'Not Found')
+    Net::HTTP.stub :get_response, mock_not_found do
+      url = "https://invalid_url.com"
+
+      result = fetch(url)
+      assert_nil result
+    end
+  end
 end
