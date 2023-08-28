@@ -7,15 +7,20 @@ def fetch(url)
   response = Net::HTTP.get_response(uri)
   return nil unless response.is_a?(Net::HTTPSuccess)
 
-  # TODO:
   # Save to disk
+  host = uri.host
+  File.write("#{host}.html", response.body)
 
   # Fetch metadata
+  html_body = Nokogiri::HTML(response.body)
+  num_links = html_body.css('a').size
+  num_images = html_body.css('img').size
+  last_fetched_at = Time.now
 
-  # {
-  #   site:,
-  #   num_links:,
-  #   images:,
-  #   last_fetched_at
-  # }
+  {
+    site: host,
+    num_links: num_links,
+    images: num_images,
+    last_fetched_at: last_fetched_at
+  }
 end
