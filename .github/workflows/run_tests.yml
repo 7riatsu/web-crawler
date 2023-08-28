@@ -14,4 +14,4 @@ jobs:
       run: docker build -t web_crawler .
 
     - name: Run tests
-      run: docker run --entrypoint "ruby" web_crawler -Ilib:test -e 'ARGV.each { |f| require f }' /app/test/*_test.rb
+      run: docker run --entrypoint "sh" web_crawler -c "ruby -Ilib:test -e 'ARGV.each { |f| require f }' /app/test/*_test.rb"
