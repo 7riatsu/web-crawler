@@ -1,14 +1,17 @@
 require 'minitest/autorun'
 require_relative '../lib/fetcher'
+require_relative 'mock_http_success'
 
 class FetcherTest < Minitest::Test
   def test_fetch_success
-    mock_response = Struct.new(:body).new("<html><a href='#'></a><img src='image.jpg'></html>")
+    mock_response = MockHTTPSuccess.new(1.0, '200', 'OK')
+    mock_response.mock_body = "<html><a href='#'></a><img src='image.jpg'></html>"
+
     Net::HTTP.stub :get_response, mock_response do
       url = "https://example.com"
       result = fetch(url)
 
-      assert File.exist?("example.com.html")
+      assert File.exist?(File.join(SAVE_DIRECTORY, "example.com.html"))
 
       refute_nil result[:last_fetched_at]
       assert_equal 1, result[:num_links]
