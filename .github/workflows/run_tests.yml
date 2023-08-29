@@ -1,0 +1,17 @@
+name: Run Tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Build the Docker image
+      run: docker build -t web_crawler .
+
+    - name: Run tests
+      run: docker run --entrypoint "sh" web_crawler -c "ruby -Ilib:test -e 'ARGV.each { |f| require f }' /app/test/*_test.rb"
