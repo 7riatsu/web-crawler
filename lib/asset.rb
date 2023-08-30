@@ -16,6 +16,8 @@ class Asset
 
     return unless response.is_a?(Net::HTTPSuccess)
 
+    dir = File.dirname(@path)
+    Dir.mkdir(dir) unless Dir.exist?(dir)
     File.write(@path, response.body)
   end
 end

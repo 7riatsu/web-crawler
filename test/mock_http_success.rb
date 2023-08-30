@@ -1,3 +1,5 @@
+require 'net/http'
+
 class MockHTTPSuccess < Net::HTTPSuccess
   attr_accessor :mock_body
 
