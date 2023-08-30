@@ -2,30 +2,37 @@ require 'net/http'
 require 'nokogiri'
 require 'uri'
 
-SAVE_DIRECTORY = '/app/saved_pages'.freeze
+require_relative 'page'
+require_relative 'asset'
+require_relative 'page_metadata'
 
-def fetch(url)
-  uri = URI.parse(url)
-  response = Net::HTTP.get_response(uri)
-  return nil unless response.is_a?(Net::HTTPSuccess)
+class Fetcher
+  def initialize(url)
+    @uri = URI.parse(url)
+    @page = nil
+  end
 
-  # Make sure directory exists
-  Dir.mkdir(SAVE_DIRECTORY) unless Dir.exist?(SAVE_DIRECTORY)
+  def fetch
+    response = Net::HTTP.get_response(@uri)
+    return nil unless response.is_a?(Net::HTTPSuccess)
 
-  # Save to disk
-  host = uri.host
-  File.write(File.join(SAVE_DIRECTORY, "#{host}.html"), response.body)
+    @page = Page.new(@uri, response.body)
+    @page.save
+    @page.extract_assets
 
-  # Fetch metadata
-  html_body = Nokogiri::HTML(response.body)
-  num_links = html_body.css('a').size
-  num_images = html_body.css('img').size
-  last_fetched_at = Time.now
+    visited = {}
+    @page.assets.each do |asset|
+      asset.download(@uri.to_s, visited)
+    end
 
-  {
-    site: host,
-    num_links: num_links,
-    images: num_images,
-    last_fetched_at: last_fetched_at
-  }
+    num_links = @page.body.css('a').size
+    num_images = @page.body.css('img').size
+
+    PageMetadata.new(
+      site: @uri.host,
+      num_links: num_links,
+      num_images: num_images,
+      last_fetched_at: Time.now
+    )
+  end
 end
