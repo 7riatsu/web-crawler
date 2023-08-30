@@ -19,5 +19,5 @@ docker run web_crawler https://example.com https://www.google.com
 
 ## Running tests
 ```bash
-docker run --entrypoint "ruby" web_crawler /app/test/fetcher_test.rb
+docker run --entrypoint "sh" web_crawler -c "ruby -Ilib:test -e 'ARGV.each { |f| require f }' /app/test/*_test.rb"
 ```
