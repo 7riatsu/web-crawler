@@ -7,7 +7,7 @@ class AssetTest < Minitest::Test
     @url = '/some/path/to/asset.css'
     @path = './some_local_path/asset.css'
     @asset = Asset.new(@url, @path)
-    @mock_response = MockHTTPSuccess.new('1.1', '200', 'OK')
+    @mock_response = MockHTTPSuccess.new(1.0, '200', 'OK')
     @mock_response.mock_body = 'mock_body_content'
   end
 
