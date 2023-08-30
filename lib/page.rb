@@ -1,10 +1,12 @@
+require 'nokogiri'
+
 require_relative 'asset'
 require_relative 'utilities'
 
-SAVE_DIRECTORY = '/app/saved_pages'.freeze
-
 class Page
   include Utilities
+
+  SAVE_DIRECTORY = '/app/saved_pages'.freeze
 
   attr_reader :uri, :body, :assets
 
